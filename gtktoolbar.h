@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2003 Joern Thyssen <jth@gnubg.org>
- * Copyright (C) 2003-2011 the AUTHORS
+ * Copyright (C) 2003-2025 the AUTHORS
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,18 +14,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
- * $Id: gtktoolbar.h,v 1.16 2021/06/30 21:11:44 plm Exp $
  */
 
 #ifndef GTKTOOLBAR_H
 #define GTKTOOLBAR_H
 
 #include "gtkboard.h"
-
-#if defined(USE_GTKITEMFACTORY)
-extern GtkItemFactory *pif;
-#endif
 
 typedef enum {
     C_NONE,

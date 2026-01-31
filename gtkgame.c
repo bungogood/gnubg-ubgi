@@ -84,21 +84,14 @@
 #define KEY_ESCAPE -229
 
 #if defined(USE_BOARD3D)
-	gboolean widget3dValid;
-
-	#if defined(USE_GTKITEMFACTORY)
-		/* Offset action to avoid predefined values */
-		#define MENU_OFFSET 50
-	#endif
+gboolean widget3dValid;
 #endif
 
-#if !defined(USE_GTKITEMFACTORY)
 static void TogglePanel(guint iType, guint iActionID, GtkToggleAction * action,
                         GtkToggleAction * alt, gpointer user_data);
 
 static void ToolbarStyle(guint iType, guint iActionID, GtkRadioAction * action,
                          GtkRadioAction * alt, gpointer user_data);
-#endif
 
 static char *newLang;
 
@@ -194,8 +187,6 @@ typedef enum {
 /* TRUE if GNUbg is automatically setting the state of a menu item. */
 static int fAutoCommand;
 
-#if !defined(USE_GTKITEMFACTORY)
-
 /*
  * Some of the callback functions below, either explicit or
  * constructed with macros, are unused (were they added "just in case" ?)
@@ -281,51 +272,50 @@ ExecActionCommand_internal(guint UNUSED(iWidgetType), guint iCommand, gchar * sz
 }
 
 #define CREATE_CMD_ACTION_CALLBACK(CMDID, szCommand) \
-	static void CMDID##_action_cb ( GtkAction *action, gpointer user_data ) \
-	{ \
-		ExecActionCommand_internal ( 0, CMDID, szCommand, (gpointer)action, NULL, user_data ); \
-		return; \
-	} ;
+    static void CMDID##_action_cb ( GtkAction *action, gpointer user_data ) \
+    { \
+        ExecActionCommand_internal ( 0, CMDID, szCommand, (gpointer)action, NULL, user_data ); \
+        return; \
+    } ;
 
 #if 0
 #define CREATE_CMD_TOGGLE_CALLBACK(CMDID, szCommand) \
-	static void CMDID##_toggle_cb ( GtkToggleAction *action, gpointer user_data ) \
-	{ \
-		ExecToggleActionCommand_internal ( 1, CMDID, szCommand, (gpointer)action, NULL, user_data ); \
-		return; \
-	} ;
+    static void CMDID##_toggle_cb ( GtkToggleAction *action, gpointer user_data ) \
+    { \
+        ExecToggleActionCommand_internal ( 1, CMDID, szCommand, (gpointer)action, NULL, user_data ); \
+        return; \
+    } ;
 #endif
 
 #define CREATE_CMD_RADIO_CALLBACK(CMDID, szCommand) \
-	static void CMDID##_radio_cb ( GtkRadioAction *action, GtkRadioAction *current, gpointer user_data ) \
-	{ \
-		ExecRadioActionCommand_internal ( 2, CMDID, szCommand, (gpointer)action, (gpointer)current, user_data ); \
-		return; \
-	} ;
+    static void CMDID##_radio_cb ( GtkRadioAction *action, GtkRadioAction *current, gpointer user_data ) \
+    { \
+        ExecRadioActionCommand_internal ( 2, CMDID, szCommand, (gpointer)action, (gpointer)current, user_data ); \
+        return; \
+    } ;
 
 #if 0
 #define CREATE_GENERIC_ACTION_CALLBACK(ACTIONID, callbackfunc) \
-	static void ACTIONID##_action_g_cb ( GtkAction *action, gpointer user_data ) \
-	{ \
-		callbackfunc ( 0, ACTIONID, action, NULL, user_data ); \
-		return; \
-	} ;
+    static void ACTIONID##_action_g_cb ( GtkAction *action, gpointer user_data ) \
+    { \
+        callbackfunc ( 0, ACTIONID, action, NULL, user_data ); \
+        return; \
+    } ;
 #endif
 
 #define CREATE_GENERIC_TOGGLE_CALLBACK(ACTIONID, callbackfunc) \
-	static void ACTIONID##_toggle_g_cb ( GtkToggleAction *action, gpointer user_data ) \
-	{ \
-		callbackfunc ( 1, ACTIONID, action, NULL, user_data ); \
-		return; \
-	} ;
+    static void ACTIONID##_toggle_g_cb ( GtkToggleAction *action, gpointer user_data ) \
+    { \
+        callbackfunc ( 1, ACTIONID, action, NULL, user_data ); \
+        return; \
+    } ;
 
 #define CREATE_GENERIC_RADIO_CALLBACK(ACTIONID, callbackfunc) \
-	static void ACTIONID##_radio_g_cb ( GtkRadioAction *action, GtkRadioAction *current, gpointer user_data ) \
-	{ \
-		callbackfunc ( 2, ACTIONID, action, current, user_data ); \
-		return; \
-	} ;
-
+    static void ACTIONID##_radio_g_cb ( GtkRadioAction *action, GtkRadioAction *current, gpointer user_data ) \
+    { \
+        callbackfunc ( 2, ACTIONID, action, current, user_data ); \
+        return; \
+    } ;
 
 #define CMD_ACTION_CALLBACK_FROMID(CMDID) (GCallback)CMDID##_action_cb
 
@@ -440,130 +430,6 @@ CREATE_GENERIC_TOGGLE_CALLBACK(TOGGLE_THEORY, TogglePanel);
 CREATE_GENERIC_TOGGLE_CALLBACK(TOGGLE_COMMAND, TogglePanel);
 CREATE_GENERIC_RADIO_CALLBACK(VIEW_TOOLBAR_ICONSONLY, ToolbarStyle);
 CREATE_CMD_RADIO_CALLBACK(CMD_SET_TURN_0, NULL);
-#else
-
-static const char *aszCommands[NUM_CMDS] = {
-    "accept",
-    "analyse clear move",
-    "analyse clear game",
-    "analyse clear match",
-    "analyse move",
-    "analyse game",
-    "analyse match",
-    "analyse rollout cube",
-    "analyse rollout move",
-    "analyse rollout game",
-    "analyse rollout match",
-    "clear turn",
-    "cmark cube clear",
-    "cmark cube show",
-    "cmark move clear",
-    "cmark move show",
-    "cmark game clear",
-    "cmark game show",
-    "cmark match clear",
-    "cmark match show",
-    "end game",
-    "decline",
-    "double",
-    "eval",
-    "help",
-    "hint",
-    "list game",
-    "next",
-    "next game",
-    "next marked",
-    "next cmarked",
-    "next roll",
-    "next rolled",
-    "play",
-    "previous",
-    "previous game",
-    "previous marked",
-    "previous cmarked",
-    "previous roll",
-    "previous rolled",
-    "quit",
-    "reject",
-    "relational add match",
-    "roll",
-    "rollout",
-    "set annotation on",
-    NULL,                       /* set appearance */
-    "set message on",
-    NULL,                       /* set turn 0 */
-    NULL,                       /* set turn 1 */
-    "show calibration",
-    "show copying",
-    "show engine",
-    "show export",
-    "show history",
-    "show marketwindow",
-    "show matchequitytable",
-    "show kleinman",            /* opens race theory window */
-    "show manual about",
-    "show manual web",
-    "show rolls",
-    "show statistics match",
-    "show temperaturemap",
-    "show temperaturemap =cube",
-    "show scoremap",
-    "show scoremap =move",
-    "show version",
-    "show warranty",
-    "swap players",
-};
-
-static void
-Command(gpointer UNUSED(p), guint iCommand, GtkWidget * widget)
-{
-
-    char sz[80];
-
-    if (fAutoCommand)
-        return;
-
-    /* FIXME this isn't very good -- if UserCommand fails, the setting
-     * won't have been changed, but the widget will automatically have
-     * updated itself. */
-
-    if (GTK_IS_RADIO_MENU_ITEM(widget)) {
-        if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget)))
-            return;
-    } else if (GTK_IS_CHECK_MENU_ITEM(widget)) {
-        sprintf(sz, "%s %s", aszCommands[iCommand],
-                gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget)) ? "on" : "off");
-        UserCommand(sz);
-
-        return;
-    }
-
-    switch (iCommand) {
-    case CMD_SET_APPEARANCE:
-        BoardPreferences(pwBoard);
-        return;
-
-    case CMD_SET_TURN_0:
-    case CMD_SET_TURN_1:
-        sprintf(sz, "set turn %s", ap[iCommand - CMD_SET_TURN_0].szName);
-        UserCommand(sz);
-        return;
-
-    case CMD_ANALYSE_MATCH:
-        UserCommand(aszCommands[CMD_ANALYSE_MATCH]);
-        if (fAutoDB) {
-            /* add match to db */
-            CommandRelationalAddMatch(NULL);
-        }
-        UserCommand(aszCommands[CMD_SHOW_STATISTICS_MATCH]);
-        return;
-
-    default:
-        UserCommand(aszCommands[iCommand]);
-    }
-}
-
-#endif
 
 typedef struct {
     const char *title;
@@ -575,7 +441,6 @@ typedef struct {
     int cubeDisabled;
     int fWeakLevels;
 } AnalysisDetails;
-
 
 typedef struct {
 
@@ -630,11 +495,7 @@ GtkWidget *pwAnalysis;
 GtkWidget *pwCommentary;
 static moverecord *pmrAnnotation;
 GtkAccelGroup *pagMain;
-#if defined(USE_GTKITEMFACTORY)
-GtkItemFactory *pif;
-#else
 GtkUIManager *puim = NULL;
-#endif
 guint nNextTurn = 0;            /* GTK idle function */
 static guint idOutput, idProgress;
 int fTTY = TRUE;
@@ -1617,15 +1478,6 @@ MainSize(GtkWidget * pw, GtkRequisition * preq, gpointer p)
 }
 #endif
 
-#if defined(USE_GTKITEMFACTORY)
-static gchar *
-GTKTranslate(const gchar * path, gpointer UNUSED(func_data))
-{
-    return (gchar *) gettext((const char *) path);
-}
-#endif
-
-#if !defined(USE_GTKITEMFACTORY)
 static void
 ToolbarStyle(guint UNUSED(iType), guint UNUSED(iActionID), GtkRadioAction * action, GtkRadioAction * UNUSED(alt),
              gpointer UNUSED(user_data))
@@ -1634,15 +1486,6 @@ ToolbarStyle(guint UNUSED(iType), guint UNUSED(iActionID), GtkRadioAction * acti
     /* If radio button has been selected set style */
     SetToolbarStyle(actionID - VIEW_TOOLBAR_ICONSONLY);
 }
-#else
-static void
-ToolbarStyle(gpointer UNUSED(callback_data), guint callback_action, GtkWidget * widget)
-{
-    if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget))) {  /* If radio button has been selected set style */
-        SetToolbarStyle(callback_action - TOOLBAR_ACTION_OFFSET);
-    }
-}
-#endif
 
 static GtkClipboard *clipboard = NULL;
 
@@ -1764,7 +1607,6 @@ CopyPositionID(gpointer UNUSED(p), guint UNUSED(n), GtkWidget * UNUSED(pw))
     gtk_statusbar_push(GTK_STATUSBAR(pwStatus), idOutput, _("Position ID copied to the clipboard"));
 }
 
-#if !defined(USE_GTKITEMFACTORY)
 static void
 TogglePanel(guint UNUSED(iType), guint iActionID, GtkToggleAction * action, GtkToggleAction * UNUSED(alt),
             gpointer UNUSED(user_data))
@@ -1804,48 +1646,6 @@ TogglePanel(guint UNUSED(iType), guint iActionID, GtkToggleAction * action, GtkT
     SetMainWindowSize();
 }
 
-#else
-static void
-TogglePanel(gpointer UNUSED(p), guint n, GtkWidget * pw)
-{
-    int f;
-    gnubgwindow panel = WINDOW_MAIN;
-
-    g_assert(GTK_IS_CHECK_MENU_ITEM(pw));
-
-    f = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(pw));
-    switch (n) {
-    case TOGGLE_ANALYSIS:
-        panel = WINDOW_ANALYSIS;
-        break;
-    case TOGGLE_COMMENTARY:
-        panel = WINDOW_ANNOTATION;
-        break;
-    case TOGGLE_GAMELIST:
-        panel = WINDOW_GAME;
-        break;
-    case TOGGLE_MESSAGE:
-        panel = WINDOW_MESSAGE;
-        break;
-    case TOGGLE_THEORY:
-        panel = WINDOW_THEORY;
-        break;
-    case TOGGLE_COMMAND:
-        panel = WINDOW_COMMAND;
-        break;
-    default:
-        g_assert_not_reached();
-    }
-    if (f)
-        PanelShow(panel);
-    else
-        PanelHide(panel);
-
-    /* Resize screen */
-    SetMainWindowSize();
-}
-#endif
-
 extern void
 GTKUndo(void)
 {
@@ -1867,12 +1667,8 @@ extern void
 SetSwitchModeMenuText(void)
 {                               /* Update menu text */
     BoardData *bd = BOARD(pwBoard)->board_data;
-#if !defined(USE_GTKITEMFACTORY)
     GtkWidget *pMenuItem = gtk_ui_manager_get_widget(puim,
                                                      "/MainMenu/ViewMenu/SwitchMode");
-#else
-    GtkWidget *pMenuItem = gtk_item_factory_get_widget_by_action(pif, TOOLBAR_ACTION_OFFSET + MENU_OFFSET);
-#endif
     char *text;
     if (display_is_2d(bd->rd))
         text = _("Switch to 3D view");
@@ -1919,7 +1715,6 @@ SwitchDisplayMode(gpointer UNUSED(p), guint UNUSED(n), GtkWidget * UNUSED(pw))
 
 #endif
 
-#if !defined(USE_GTKITEMFACTORY)
 static void
 ToggleShowingIDs(GtkToggleAction * action, gpointer UNUSED(user_data))
 {
@@ -1929,17 +1724,6 @@ ToggleShowingIDs(GtkToggleAction * action, gpointer UNUSED(user_data))
     g_free(sz);
     UserCommand("save settings");
 }
-#else
-static void
-ToggleShowingIDs(gpointer UNUSED(p), guint UNUSED(n), GtkWidget * pw)
-{
-    int newValue = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(pw));
-    char *sz = g_strdup_printf("set gui showids %s", newValue ? "on" : "off");
-    UserCommand(sz);
-    g_free(sz);
-    UserCommand("save settings");
-}
-#endif
 
 int fToolbarShowing = TRUE;
 
@@ -1950,19 +1734,12 @@ ShowToolbar(void)
     gtk_widget_show(pwToolbar);
     gtk_widget_show(pwHandle);
 
-#if !defined(USE_GTKITEMFACTORY)
     gtk_widget_show((gtk_ui_manager_get_widget(puim, "/MainMenu/ViewMenu/ToolBarMenu/HideToolBar")));
     gtk_widget_hide((gtk_ui_manager_get_widget(puim, "/MainMenu/ViewMenu/ToolBarMenu/ShowToolBar")));
     gtk_widget_set_sensitive((gtk_ui_manager_get_widget(puim, "/MainMenu/ViewMenu/ToolBarMenu/IconsOnly")), TRUE);
     gtk_widget_set_sensitive((gtk_ui_manager_get_widget(puim, "/MainMenu/ViewMenu/ToolBarMenu/TextOnly")), TRUE);
     gtk_widget_set_sensitive((gtk_ui_manager_get_widget(puim, "/MainMenu/ViewMenu/ToolBarMenu/Both")), TRUE);
-#else
-    gtk_widget_show(gtk_item_factory_get_widget(pif, "/View/Toolbar/Hide Toolbar"));
-    gtk_widget_hide(gtk_item_factory_get_widget(pif, "/View/Toolbar/Show Toolbar"));
-    gtk_widget_set_sensitive(gtk_item_factory_get_widget(pif, "/View/Toolbar/Icons only"), TRUE);
-    gtk_widget_set_sensitive(gtk_item_factory_get_widget(pif, "/View/Toolbar/Text only"), TRUE);
-    gtk_widget_set_sensitive(gtk_item_factory_get_widget(pif, "/View/Toolbar/Both"), TRUE);
-#endif
+
     fToolbarShowing = TRUE;
     UserCommand("save settings");
 }
@@ -1974,19 +1751,12 @@ HideToolbar(void)
     gtk_widget_hide(pwToolbar);
     gtk_widget_hide(pwHandle);
 
-#if !defined(USE_GTKITEMFACTORY)
     gtk_widget_hide((gtk_ui_manager_get_widget(puim, "/MainMenu/ViewMenu/ToolBarMenu/HideToolBar")));
     gtk_widget_show((gtk_ui_manager_get_widget(puim, "/MainMenu/ViewMenu/ToolBarMenu/ShowToolBar")));
     gtk_widget_set_sensitive((gtk_ui_manager_get_widget(puim, "/MainMenu/ViewMenu/ToolBarMenu/IconsOnly")), FALSE);
     gtk_widget_set_sensitive((gtk_ui_manager_get_widget(puim, "/MainMenu/ViewMenu/ToolBarMenu/TextOnly")), FALSE);
     gtk_widget_set_sensitive((gtk_ui_manager_get_widget(puim, "/MainMenu/ViewMenu/ToolBarMenu/Both")), FALSE);
-#else
-    gtk_widget_hide(gtk_item_factory_get_widget(pif, "/View/Toolbar/Hide Toolbar"));
-    gtk_widget_show(gtk_item_factory_get_widget(pif, "/View/Toolbar/Show Toolbar"));
-    gtk_widget_set_sensitive(gtk_item_factory_get_widget(pif, "/View/Toolbar/Icons only"), FALSE);
-    gtk_widget_set_sensitive(gtk_item_factory_get_widget(pif, "/View/Toolbar/Text only"), FALSE);
-    gtk_widget_set_sensitive(gtk_item_factory_get_widget(pif, "/View/Toolbar/Both"), FALSE);
-#endif
+
     fToolbarShowing = FALSE;
     UserCommand("save settings");
 }
@@ -2019,13 +1789,8 @@ DoFullScreenMode(gpointer UNUSED(p), guint UNUSED(n), GtkWidget * UNUSED(pw))
     static gulong id;
     static int changedRP, changedDP;
 
-#if !defined(USE_GTKITEMFACTORY)
     GtkWidget *pmiRP = gtk_ui_manager_get_widget(puim, "/MainMenu/ViewMenu/RestorePanels");
     GtkWidget *pmiDP = gtk_ui_manager_get_widget(puim, "/MainMenu/ViewMenu/DockPanels");
-#else
-    GtkWidget *pmiRP = gtk_item_factory_get_widget(pif, "/View/Restore panels");
-    GtkWidget *pmiDP = gtk_item_factory_get_widget(pif, "/View/Dock panels");
-#endif
 
 #if defined(USE_BOARD3D)
     if (display_is_3d(bd->rd)) {        /* Stop any 3d animations */
@@ -2033,13 +1798,8 @@ DoFullScreenMode(gpointer UNUSED(p), guint UNUSED(n), GtkWidget * UNUSED(pw))
     }
 #endif
 
-#if !defined(USE_GTKITEMFACTORY)
     fFullScreen = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(gtk_ui_manager_get_widget(puim,
                                                                                                "/MainMenu/ViewMenu/FullScreen")));
-#else
-    fFullScreen =
-        gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(gtk_item_factory_get_widget(pif, "/View/Full screen")));
-#endif
     if (fFullScreen) {
         if (!fullScreenOnStartup)
             GTKShowWarning(WARN_FULLSCREEN_EXIT, NULL);
@@ -2132,12 +1892,9 @@ extern void
 FullScreenMode(int state)
 {
     BoardData *bd = BOARD(pwBoard)->board_data;
-#if !defined(USE_GTKITEMFACTORY)
     GtkWidget *pw = gtk_ui_manager_get_widget(puim,
                                               "/MainMenu/ViewMenu/FullScreen");
-#else
-    GtkWidget *pw = gtk_item_factory_get_widget(pif, "/View/Full screen");
-#endif
+
     if (gtk_widget_get_realized(bd->table))
         gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(pw), state);
 }
@@ -2747,7 +2504,7 @@ AddLevelSettings(GtkWidget * pwFrame, AnalysisDetails * pAnalDetails)
   { \
      gchar buf[G_ASCII_DTOSTR_BUF_SIZE]; \
      sprintf(sz,  (string), g_ascii_formatd( buf, G_ASCII_DTOSTR_BUF_SIZE, \
-			           "%0.3f", (gdouble) gtk_adjustment_get_value( paw->apadjSkill[(button)] ) ) ); \
+                           "%0.3f", (gdouble) gtk_adjustment_get_value( paw->apadjSkill[(button)] ) ) ); \
      UserCommand(sz); \
   }
 
@@ -2756,7 +2513,7 @@ AddLevelSettings(GtkWidget * pwFrame, AnalysisDetails * pAnalDetails)
   { \
      gchar buf[G_ASCII_DTOSTR_BUF_SIZE]; \
      sprintf(sz,  (string), g_ascii_formatd( buf, G_ASCII_DTOSTR_BUF_SIZE, \
-			           "%0.3f", (gdouble) gtk_adjustment_get_value( paw->apadjLuck[(button)] ) ) ); \
+                                   "%0.3f", (gdouble) gtk_adjustment_get_value( paw->apadjLuck[(button)] ) ) ); \
      UserCommand(sz); \
   }
 
@@ -2792,7 +2549,7 @@ AnalysisOK(GtkWidget * pw, analysiswidget * paw)
             sprintf(sz, "set analysis filesetting %s", aszAnalyzeFileSettingCommands[i]);
             UserCommand(sz);
             break;
-        } 
+        }
 
     /* Score Map */
 
@@ -2804,12 +2561,12 @@ AnalysisOK(GtkWidget * pw, analysiswidget * paw)
         } }
 
 
-    for (i = 0; i < NUM_MATCH_LENGTH; ++i){
+    for (i = 0; i < NUM_MATCH_LENGTH; ++i) {
         if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapMatchLength[i])) && scoreMapMatchLengthDefIdx != (scoreMapMatchLength) i) {
             sprintf(sz, "set scoremapmatchlength %s", aszScoreMapMatchLengthCommands[i]);
             UserCommand(sz);
             break;
-        } 
+        }
     }
 
 
@@ -2818,38 +2575,42 @@ AnalysisOK(GtkWidget * pw, analysiswidget * paw)
             sprintf(sz, "set scoremaplabel %s", aszScoreMapLabelCommands[i]);
             UserCommand(sz);
             break;
-        } 
-    for (i = 0; i < NUM_JACOBY; ++i)
-       { if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapJacoby[i])) && scoreMapJacobyDef != (scoreMapJacoby) i) {
+        }
+    for (i = 0; i < NUM_JACOBY; ++i) {
+        if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapJacoby[i])) && scoreMapJacobyDef != (scoreMapJacoby) i) {
             sprintf(sz, "set scoremapjacoby %s", aszScoreMapJacobyCommands[i]);
             UserCommand(sz);
             break;
-        }} 
-    for (i = 0; i < NUM_CUBEDISP; ++i)
-        {if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapCubeEquityDisplay[i])) && scoreMapCubeEquityDisplayDef != (scoreMapCubeEquityDisplay) i) {
+        }
+    }
+    for (i = 0; i < NUM_CUBEDISP; ++i) {
+        if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapCubeEquityDisplay[i])) && scoreMapCubeEquityDisplayDef != (scoreMapCubeEquityDisplay) i) {
             sprintf(sz, "set scoremapcubeequitydisplay %s", aszScoreMapCubeEquityDisplayCommands[i]);
             UserCommand(sz);
             break;
-        } }
-    for (i = 0; i < NUM_MOVEDISP; ++i)
-        {if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapMoveEquityDisplay[i])) && scoreMapMoveEquityDisplayDef != (scoreMapMoveEquityDisplay) i) {
+        }
+    }
+    for (i = 0; i < NUM_MOVEDISP; ++i) {
+        if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapMoveEquityDisplay[i])) && scoreMapMoveEquityDisplayDef != (scoreMapMoveEquityDisplay) i) {
             sprintf(sz, "set scoremapmoveequitydisplay %s", aszScoreMapMoveEquityDisplayCommands[i]);
             UserCommand(sz);
             break;
-        }} 
-    for (i = 0; i < NUM_COLOUR; ++i)
-        {if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapColour[i])) && scoreMapColourDef != (scoreMapColour) i) {
+        }
+    }
+    for (i = 0; i < NUM_COLOUR; ++i) {
+        if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapColour[i])) && scoreMapColourDef != (scoreMapColour) i) {
             sprintf(sz, "set scoremapcolour %s", aszScoreMapColourCommands[i]);
             UserCommand(sz);
             break;
-        }} 
-    for (i = 0; i < NUM_LAYOUT; ++i)
-       { if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapLayout[i])) && scoreMapLayoutDef != (scoreMapLayout) i) {
+        }
+    }
+    for (i = 0; i < NUM_LAYOUT; ++i) {
+        if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapLayout[i])) && scoreMapLayoutDef != (scoreMapLayout) i) {
             sprintf(sz, "set scoremaplayout %s", aszScoreMapLayoutCommands[i]);
             UserCommand(sz);
             break;
-        }} 
-
+        }
+    }
 
     /* Group output in one batch */
     outputpostpone();
@@ -2907,34 +2668,34 @@ AnalysisSet(analysiswidget * paw)
 
     // g_message("initial def: %d\n", AnalyzeFileSettingDef);
     for (i = 0; i < NUM_AnalyzeFileSettings; ++i)
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(paw->apwAnalyzeFileSetting[i]), AnalyzeFileSettingDef == (analyzeFileSetting) i); 
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(paw->apwAnalyzeFileSetting[i]), AnalyzeFileSettingDef == (analyzeFileSetting) i);
 
-    /*Score Map*/ 
+    /*Score Map*/
 
     for (i = 0; i < NUM_PLY; ++i){
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapPly[i]), scoreMapPlyDefault == (scoreMapPly)i);
     }
 
     for (i = 0; i < NUM_MATCH_LENGTH; ++i)
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapMatchLength[i]), scoreMapMatchLengthDefIdx == (scoreMapMatchLength)i); 
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapMatchLength[i]), scoreMapMatchLengthDefIdx == (scoreMapMatchLength)i);
 
     for (i = 0; i < NUM_LABEL; ++i)
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapLabel[i]), scoreMapLabelDef == (scoreMapLabel) i); 
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapLabel[i]), scoreMapLabelDef == (scoreMapLabel) i);
 
     for (i = 0; i < NUM_JACOBY; ++i)
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapJacoby[i]), scoreMapJacobyDef == (scoreMapJacoby) i); 
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapJacoby[i]), scoreMapJacobyDef == (scoreMapJacoby) i);
 
     for (i = 0; i < NUM_CUBEDISP; ++i)
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapCubeEquityDisplay[i]), scoreMapCubeEquityDisplayDef == (scoreMapCubeEquityDisplay) i); 
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapCubeEquityDisplay[i]), scoreMapCubeEquityDisplayDef == (scoreMapCubeEquityDisplay) i);
 
     for (i = 0; i < NUM_MOVEDISP; ++i)
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapMoveEquityDisplay[i]), scoreMapMoveEquityDisplayDef == (scoreMapMoveEquityDisplay) i); 
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapMoveEquityDisplay[i]), scoreMapMoveEquityDisplayDef == (scoreMapMoveEquityDisplay) i);
 
     for (i = 0; i < NUM_COLOUR; ++i)
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapColour[i]), scoreMapColourDef == (scoreMapColour) i); 
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapColour[i]), scoreMapColourDef == (scoreMapColour) i);
 
     for (i = 0; i < NUM_LAYOUT; ++i)
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapLayout[i]), scoreMapLayoutDef == (scoreMapLayout) i); 
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(paw->apwScoreMapLayout[i]), scoreMapLayoutDef == (scoreMapLayout) i);
 
 }
 
@@ -2985,7 +2746,7 @@ AddText(GtkWidget* pwBox, char* Text)
 
 extern void
 BuildRadioButtons(GtkWidget* pwvbox, GtkWidget* apwScoreMapFrame[], const char* frameTitle, const char* frameToolTip, const char* labelStrings[],
-    int labelStringsLen, int toggleDefault) { 
+    int labelStringsLen, int toggleDefault) {
     /* Sub-function to build a new box with a new set of labels, with a whole bunch of needed parameters
 
     - pwvbox ----------
@@ -3004,7 +2765,7 @@ BuildRadioButtons(GtkWidget* pwvbox, GtkWidget* apwScoreMapFrame[], const char* 
 
 //     pwFrame = gtk_frame_new(_(frameTitle));
 //     gtk_box_pack_start(GTK_BOX(pwScoreMapBox), pwFrame, vAlignExpand, FALSE, 0);
-//     gtk_widget_set_tooltip_text(pwFrame, _(frameToolTip)); 
+//     gtk_widget_set_tooltip_text(pwFrame, _(frameToolTip));
 //     gtk_widget_set_sensitive(pwFrame, sensitive);
 
 #if GTK_CHECK_VERSION(3,0,0)
@@ -3024,7 +2785,7 @@ BuildRadioButtons(GtkWidget* pwvbox, GtkWidget* apwScoreMapFrame[], const char* 
         else
             apwScoreMapFrame[i] = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(apwScoreMapFrame[0]), _(labelStrings[i])); // Associate this to the other radio buttons
         gtk_box_pack_start(GTK_BOX(pwh2), apwScoreMapFrame[i], FALSE, FALSE, 0);
-        gtk_widget_set_tooltip_text(apwScoreMapFrame[i], _(frameToolTip));    
+        gtk_widget_set_tooltip_text(apwScoreMapFrame[i], _(frameToolTip));
         pi = (int*)g_malloc(sizeof(int));
         *pi = (int)i; // here use "=(int)labelEnum[i];" and put it in the input of the function if needed, while
              //  defining sth like " int labelEnum[] = { NUMBERS, ENGLISH, BOTH };" before calling the function
@@ -3037,7 +2798,7 @@ BuildRadioButtons(GtkWidget* pwvbox, GtkWidget* apwScoreMapFrame[], const char* 
 
 
 static void
-append_scoremap_options(analysiswidget* paw) 
+append_scoremap_options(analysiswidget* paw)
 {
     GtkWidget* pwvbox;
     GtkWidget* pwFrame;
@@ -3078,7 +2839,7 @@ append_scoremap_options(analysiswidget* paw)
 
     pwFrame = gtk_frame_new(_("Default ScoreMap settings"));
     gtk_box_pack_start(GTK_BOX(pwvbox), pwFrame, vAlignExpand, FALSE, 0);
-    gtk_widget_set_tooltip_text(pwFrame, _("Select the settings with which to initialize each new ScoreMap window")); 
+    gtk_widget_set_tooltip_text(pwFrame, _("Select the settings with which to initialize each new ScoreMap window"));
     gtk_widget_set_sensitive(pwFrame, TRUE);
 
 #if GTK_CHECK_VERSION(3,0,0)
@@ -3124,16 +2885,6 @@ append_analysis_options(analysiswidget * paw)
     memcpy(&paw->esEvalChequer, &esEvalChequer, sizeof(paw->esEvalChequer));
     memcpy(&paw->esEvalCube, &esEvalCube, sizeof(paw->esEvalCube));
     memcpy(&paw->aaEvalmf, aamfEval, sizeof(paw->aaEvalmf));
-
-/*  //Older version:  
-    memcpy(&aw.esCube, &esAnalysisCube, sizeof(aw.esCube));
-    memcpy(&aw.esChequer, &esAnalysisChequer, sizeof(aw.esChequer));
-    memcpy(&aw.aamf, aamfAnalysis, sizeof(aw.aamf));
-
-    memcpy(&aw.esEvalChequer, &esEvalChequer, sizeof esEvalChequer);
-    memcpy(&aw.esEvalCube, &esEvalCube, sizeof esEvalCube);
-    memcpy(aw.aaEvalmf, aamfEval, sizeof(aamfEval));
-*/
 
 #if GTK_CHECK_VERSION(3,0,0)
     pwvbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -3206,7 +2957,7 @@ append_analysis_options(analysiswidget * paw)
 
         paw->apwAnalysePlayers[i] = gtk_check_button_new_with_label(sz);
         gtk_box_pack_start(GTK_BOX(vbox2), paw->apwAnalysePlayers[i], FALSE, FALSE, 0);
-	g_free(sz);
+        g_free(sz);
 
     }
 
@@ -3377,11 +3128,11 @@ append_analysis_options(analysiswidget * paw)
                                 "disabled until the analysis is over."));
 
     BuildRadioButtons(vbox3, paw->apwAnalyzeFileSetting,
-        _("Select the default file analysis settings (hover for details):"), 
+        _("Select the default file analysis settings (hover for details):"),
         _("- Batch analysis can analyze several files, but does not allow browsing the results at the same time\n "
         "- Single-file analysis can only analyze one file, but can work in the background. \n"
         "- Smart analysis will open the latest file in the most recently opened folder and/or the default import "
-        "folder, then run the single-file analysis."), 
+        "folder, then run the single-file analysis."),
         aszAnalyzeFileSetting, NUM_AnalyzeFileSettings, AnalyzeFileSettingDef);
     // BuildRadioButtons(vbox3, paw->apwAnalyzeFileSetting,  _("Select:"),   _("- Baanalysis."), aszAnalyzeFileSetting, NUM_AnalyzeFileSettings, AnalyzeFileSettingDef);
 
@@ -3938,8 +3689,6 @@ ReportBug(gpointer UNUSED(p), guint UNUSED(n), GtkWidget * UNUSED(pwEvent))
     OpenURL("https://savannah.gnu.org/bugs/?func=additem&group=gnubg");
 }
 
-#if !defined(USE_GTKITEMFACTORY)
-
 static GtkActionEntry actionEntries[] = {
     { "FileMenuAction", NULL, N_("_File"), NULL, NULL, G_CALLBACK(NULL) },
     { "FileNewAction", GTK_STOCK_NEW, N_("_New..."), "<control>N", N_("Start new game, match, session or position"),
@@ -4143,234 +3892,6 @@ static GtkRadioActionEntry setTurnRadioActionEntries[] = {
     { "SetTurnPlayer1Action", NULL, "1", NULL, NULL, CMD_SET_TURN_1 },
 };
 
-#else
-static GtkItemFactoryEntry aife[] = {
-    { N_("/_File"), NULL, NULL, 0, "<Branch>", NULL },
-    { N_("/_File/_New..."), "<control>N", G_CALLBACK(NewClicked), 0,
-     "<StockItem>", GTK_STOCK_NEW },
-    { N_("/_File/_Open..."), "<control>O", G_CALLBACK(GTKOpen), 0,
-     "<StockItem>", GTK_STOCK_OPEN },
-    { N_("/_File/_Save..."), "<control>S", G_CALLBACK(GTKSave), 0,
-     "<StockItem>", GTK_STOCK_SAVE },
-    { N_("/_File/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_File/Open _Commands..."), NULL, G_CALLBACK(GTKCommandsOpen), 0,
-     NULL, NULL },
-    { N_("/_File/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_File/Match information..."), NULL, GTKMatchInfo, 0, NULL,
-     NULL },
-    { N_("/_File/-"), NULL, NULL, 0, "<Separator>", NULL },
-    {
-#if defined(WIN32)
-     N_("/_File/E_xit"),
-#else
-     N_("/_File/_Quit"),
-#endif
-     "<control>Q", G_CALLBACK(Command), CMD_QUIT, "<StockItem>", GTK_STOCK_QUIT },
-    { N_("/_Edit"), NULL, NULL, 0, "<Branch>", NULL },
-    { N_("/_Edit/_Undo"), "<control>Z", GTKUndo, 0,
-     "<StockItem>", GTK_STOCK_UNDO },
-    { N_("/_Edit/-"), NULL, NULL, 0, "<Separator>", NULL },
-
-    { N_("/_Edit/_Copy ID to Clipboard"), NULL, NULL, 0, "<Branch>", NULL },
-    { N_("/_Edit/_Copy ID to Clipboard/GNUbg ID"), "<control>C", G_CALLBACK(CopyIDs), 0, NULL, NULL },
-    { N_("/_Edit/_Copy ID to Clipboard/Match ID"), "<control>M", G_CALLBACK(CopyMatchID), 0, NULL, NULL },
-    { N_("/_Edit/_Copy ID to Clipboard/Position ID"), "<control>P", G_CALLBACK(CopyPositionID), 0, NULL, NULL },
-
-    { N_("/_Edit/Copy as"), NULL, NULL, 0, "<Branch>", NULL },
-    { N_("/_Edit/Copy as/Position as ASCII"), NULL,
-     G_CALLBACK(CommandCopy), 0, NULL, NULL },
-    { N_("/_Edit/Copy as/BGonline (HTML)"), NULL,
-     G_CALLBACK(CopyAsGOL), 0, NULL, NULL },
-
-    { N_("/_Edit/_Paste ID"), "<control>V", PasteIDs, 0,
-     "<StockItem>", GTK_STOCK_PASTE },
-
-    { N_("/_Edit/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_Edit/_Edit Position"), NULL, click_edit, 0,
-     "<CheckItem>", NULL },
-
-    { N_("/_View"), NULL, NULL, 0, "<Branch>", NULL },
-    { N_("/_View/_Panels"), NULL, NULL, 0, "<Branch>", NULL },
-    { N_("/_View/_Panels/_Game record"), NULL, G_CALLBACK(TogglePanel), TOGGLE_GAMELIST,
-     "<CheckItem>", NULL },
-    { N_("/_View/_Panels/_Analysis"), NULL, G_CALLBACK(TogglePanel), TOGGLE_ANALYSIS,
-     "<CheckItem>", NULL },
-    { N_("/_View/_Panels/_Commentary"), NULL, G_CALLBACK(TogglePanel), TOGGLE_COMMENTARY,
-     "<CheckItem>", NULL },
-    { N_("/_View/_Panels/_Message"), NULL, G_CALLBACK(TogglePanel), TOGGLE_MESSAGE,
-     "<CheckItem>", NULL },
-    { N_("/_View/_Panels/_Theory"), NULL, G_CALLBACK(TogglePanel), TOGGLE_THEORY,
-     "<CheckItem>", NULL },
-    { N_("/_View/_Panels/_Command"), NULL, G_CALLBACK(TogglePanel), TOGGLE_COMMAND,
-     "<CheckItem>", NULL },
-    { N_("/_View/_Dock panels"), NULL, G_CALLBACK(ToggleDockPanels), 0, "<CheckItem>", NULL },
-    { N_("/_View/Restore panels"), NULL, G_CALLBACK(ShowAllPanels), 0, NULL, NULL },
-    { N_("/_View/Hide panels"), NULL, G_CALLBACK(HideAllPanels), 0, NULL, NULL },
-    { N_("/_View/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_View/Show _ID in status bar"), NULL, G_CALLBACK(ToggleShowingIDs), 0, "<CheckItem>", NULL },
-    { N_("/_View/_Toolbar"), NULL, NULL, 0, "<Branch>", NULL },
-    { N_("/_View/_Toolbar/_Hide Toolbar"), NULL, HideToolbar, 0, NULL, NULL },
-    { N_("/_View/_Toolbar/_Show Toolbar"), NULL, ShowToolbar, 0, NULL, NULL },
-    { N_("/_View/_Toolbar/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_View/_Toolbar/_Icons only"), NULL, G_CALLBACK(ToolbarStyle), TOOLBAR_ACTION_OFFSET + GTK_TOOLBAR_ICONS,
-     "<RadioItem>", NULL },
-    { N_("/_View/_Toolbar/_Text only"), NULL, G_CALLBACK(ToolbarStyle), TOOLBAR_ACTION_OFFSET + GTK_TOOLBAR_TEXT,
-     "/View/Toolbar/Icons only", NULL },
-    { N_("/_View/_Toolbar/_Both"), NULL, G_CALLBACK(ToolbarStyle), TOOLBAR_ACTION_OFFSET + GTK_TOOLBAR_BOTH,
-     "/View/Toolbar/Icons only", NULL },
-    { N_("/_View/Full screen"), "F11", G_CALLBACK(DoFullScreenMode), 0, "<CheckItem>", NULL },
-    { N_("/_View/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_View/Play _Clockwise"), NULL, click_swapdirection, 0, "<CheckItem>", NULL },
-#if defined(USE_BOARD3D)
-    { N_("/_View/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_View/Switch to xD view"), NULL, G_CALLBACK(SwitchDisplayMode), TOOLBAR_ACTION_OFFSET + MENU_OFFSET, NULL,
-     NULL },
-#endif
-    { N_("/_Game"), NULL, NULL, 0, "<Branch>", NULL },
-    { N_("/_Game/_Roll"), "<control>R", G_CALLBACK(Command), CMD_ROLL, NULL, NULL },
-    { N_("/_Game/_Finish move"), "<control>F", G_CALLBACK(FinishMove), 0, NULL, NULL },
-    { N_("/_Game/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_Game/_Double"), "<control>D", G_CALLBACK(Command), CMD_DOUBLE, "<StockItem>", GNUBG_STOCK_DOUBLE },
-    { N_("/_Game/Re_sign"), NULL, G_CALLBACK(GTKResign), 0, "<StockItem>", GNUBG_STOCK_RESIGN },
-    { N_("/_Game/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_Game/_Accept"), NULL, G_CALLBACK(Command), CMD_ACCEPT, "<StockItem>", GNUBG_STOCK_ACCEPT },
-    { N_("/_Game/Re_ject"), NULL, G_CALLBACK(Command), CMD_REJECT, "<StockItem>", GNUBG_STOCK_REJECT },
-    { N_("/_Game/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_Game/Play computer turn"), NULL, G_CALLBACK(Command), CMD_PLAY, NULL,
-     NULL },
-    { N_("/_Game/_End Game"), "<control>G", G_CALLBACK(Command), CMD_END_GAME, "<StockItem>", GNUBG_STOCK_END_GAME },
-    { N_("/_Game/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_Game/Swap players"), NULL, G_CALLBACK(Command), CMD_SWAP_PLAYERS, NULL,
-     NULL },
-    { N_("/_Game/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_Game/Set cube..."), NULL, G_CALLBACK(GTKSetCube), 0, NULL, NULL },
-    { N_("/_Game/Set _dice..."), NULL, G_CALLBACK(GTKSetDice), 0, NULL, NULL },
-    { N_("/_Game/Set _turn"), NULL, NULL, 0, "<Branch>", NULL },
-    { N_("/_Game/Set turn/0"),
-     NULL, G_CALLBACK(Command), CMD_SET_TURN_0, "<RadioItem>", NULL },
-    { N_("/_Game/Set turn/1"), NULL, G_CALLBACK(Command), CMD_SET_TURN_1,
-     "/Game/Set turn/0", NULL },
-    { N_("/_Game/Clear turn"), NULL, G_CALLBACK(Command), CMD_CLEAR_TURN, NULL, NULL },
-    { N_("/_Analyse"), NULL, NULL, 0, "<Branch>", NULL },
-    { N_("/_Analyse/_Evaluate"), "<control>E", G_CALLBACK(Command), CMD_EVAL, NULL, NULL },
-    { N_("/_Analyse/_Hint"), "<control>H", G_CALLBACK(Command), CMD_HINT,
-     "<StockItem>", GNUBG_STOCK_HINT },
-    { N_("/_Analyse/_Rollout position"), NULL, G_CALLBACK(Command), CMD_ROLLOUT, NULL, NULL },
-    { N_("/_Analyse/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_Analyse/Analyse move"),
-     NULL, G_CALLBACK(Command), CMD_ANALYSE_MOVE, NULL, NULL },
-    { N_("/_Analyse/Analyse game"),
-     NULL, G_CALLBACK(Command), CMD_ANALYSE_GAME, NULL, NULL },
-    { N_("/_Analyse/Analyse match or session"),
-     NULL, G_CALLBACK(Command), CMD_ANALYSE_MATCH, NULL, NULL },
-    { N_("/_Analyse/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_Analyse/Clear analysis"), NULL, NULL, 0, "<Branch>", NULL },
-    { N_("/_Analyse/Clear analysis/Move"),
-     NULL, G_CALLBACK(Command), CMD_ANALYSE_CLEAR_MOVE,
-     "<StockItem>", GTK_STOCK_CLEAR },
-    { N_("/_Analyse/Clear analysis/_Game"),
-     NULL, G_CALLBACK(Command), CMD_ANALYSE_CLEAR_GAME,
-     "<StockItem>", GTK_STOCK_CLEAR },
-    { N_("/_Analyse/Clear analysis/_Match or session"),
-     NULL, G_CALLBACK(Command), CMD_ANALYSE_CLEAR_MATCH,
-     "<StockItem>", GTK_STOCK_CLEAR },
-    { N_("/_Analyse/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_Analyse/CMark"), NULL, NULL, 0, "<Branch>", NULL },
-    { N_("/_Analyse/CMark/Cube"), NULL, NULL, 0, "<Branch>", NULL },
-    { N_("/_Analyse/CMark/Cube/Clear"), NULL, G_CALLBACK(Command), CMD_CMARK_CUBE_CLEAR, NULL, NULL },
-    { N_("/_Analyse/CMark/Cube/Show"), NULL, G_CALLBACK(Command), CMD_CMARK_CUBE_SHOW, NULL, NULL },
-    { N_("/_Analyse/CMark/Move"), NULL, NULL, 0, "<Branch>", NULL },
-    { N_("/_Analyse/CMark/Move/Clear"), NULL, G_CALLBACK(Command), CMD_CMARK_MOVE_CLEAR, NULL, NULL },
-    { N_("/_Analyse/CMark/Move/Show"), NULL, G_CALLBACK(Command), CMD_CMARK_MOVE_SHOW, NULL, NULL },
-    { N_("/_Analyse/CMark/Game"), NULL, NULL, 0, "<Branch>", NULL },
-    { N_("/_Analyse/CMark/Game/Clear"), NULL, G_CALLBACK(Command), CMD_CMARK_GAME_CLEAR, NULL, NULL },
-    { N_("/_Analyse/CMark/Game/Show"), NULL, G_CALLBACK(Command), CMD_CMARK_GAME_SHOW, NULL, NULL },
-    { N_("/_Analyse/CMark/Match"), NULL, NULL, 0, "<Branch>", NULL },
-    { N_("/_Analyse/CMark/Match/Clear"), NULL, G_CALLBACK(Command), CMD_CMARK_MATCH_CLEAR, NULL, NULL },
-    { N_("/_Analyse/CMark/Match/Show"), NULL, G_CALLBACK(Command), CMD_CMARK_MATCH_SHOW, NULL, NULL },
-    { N_("/_Analyse/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_Analyse/Rollout"), NULL, NULL, 0, "<Branch>", NULL },
-    { N_("/_Analyse/Rollout/Cube"), NULL, G_CALLBACK(Command), CMD_ANALYSE_ROLLOUT_CUBE, NULL, NULL },
-    { N_("/_Analyse/Rollout/CMarked from Move"), NULL, G_CALLBACK(Command), CMD_ANALYSE_ROLLOUT_MOVE, NULL, NULL },
-    { N_("/_Analyse/Rollout/CMarked from Game"), NULL, G_CALLBACK(Command), CMD_ANALYSE_ROLLOUT_GAME, NULL, NULL },
-    { N_("/_Analyse/Rollout/CMarked from Match"), NULL, G_CALLBACK(Command), CMD_ANALYSE_ROLLOUT_MATCH, NULL, NULL },
-    { N_("/_Analyse/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_Analyse/Analyse File"), NULL, GTKAnalyzeFile, 0, NULL, NULL },
-    { N_("/_Analyse/Batch analyse..."), NULL, G_CALLBACK(GTKBatchAnalyse), 0, NULL,
-     NULL },
-    { N_("/_Analyse/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_Analyse/Match or session statistics"), NULL, G_CALLBACK(Command),
-     CMD_SHOW_STATISTICS_MATCH, NULL, NULL },
-    { N_("/_Analyse/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_Analyse/Add match or session to database"), NULL,
-     G_CALLBACK(GtkRelationalAddMatch), 0,
-     "<StockItem>", GTK_STOCK_ADD },
-    { N_("/_Analyse/Show Records"), NULL,
-     G_CALLBACK(GtkShowRelational), 0, NULL, NULL },
-    { N_("/_Analyse/Plot History"), NULL, G_CALLBACK(Command),
-     CMD_SHOW_HISTORY, NULL, NULL },
-    { N_("/_Analyse/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_Analyse/Distribution of rolls"), NULL, G_CALLBACK(Command),
-     CMD_SHOW_ROLLS, NULL, NULL },
-    { N_("/_Analyse/Temperature Map"), NULL, G_CALLBACK(Command),
-     CMD_SHOW_TEMPERATURE_MAP, NULL, NULL },
-    { N_("/_Analyse/Temperature Map (cube decision)"), NULL, G_CALLBACK(Command),
-     CMD_SHOW_TEMPERATURE_MAP_CUBE, NULL, NULL },
-    { N_("/_Analyse/ScoreMap (move decision)"), NULL, G_CALLBACK(Command),
-     CMD_SHOW_SCORE_MAP_MOVE, NULL, NULL },
-    { N_("/_Analyse/ScoreMap (cube decision)"), NULL, G_CALLBACK(Command),
-     CMD_SHOW_SCORE_MAP_CUBE, NULL, NULL },
-    { N_("/_Analyse/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_Analyse/_Race Theory"),
-     NULL, G_CALLBACK(Command), CMD_SHOW_KLEINMAN, NULL, NULL },
-    { N_("/_Analyse/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_Analyse/_Market window"), NULL, G_CALLBACK(Command), CMD_SHOW_MARKETWINDOW,
-     NULL, NULL },
-    { N_("/_Analyse/M_atch equity table"), NULL, G_CALLBACK(Command),
-     CMD_SHOW_MATCHEQUITYTABLE, NULL, NULL },
-    { N_("/_Analyse/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_Analyse/Evaluation speed"), NULL, G_CALLBACK(Command),
-     CMD_SHOW_CALIBRATION, NULL, NULL },
-    { N_("/_Settings"), NULL, NULL, 0, "<Branch>", NULL },
-    { N_("/_Settings/_Analysis..."), NULL, G_CALLBACK(SetAnalysis), 0, NULL, NULL },
-    { N_("/_Settings/_Board Appearance..."), NULL, G_CALLBACK(Command), CMD_SET_APPEARANCE,
-     NULL, NULL },
-    { N_("/_Settings/E_xport..."), NULL, G_CALLBACK(Command), CMD_SHOW_EXPORT,
-     NULL, NULL },
-    { N_("/_Settings/_Players..."), NULL, G_CALLBACK(SetPlayers), 0, NULL, NULL },
-    { N_("/_Settings/_Rollouts..."), NULL, G_CALLBACK(SetRollouts), 0, NULL, NULL },
-    { N_("/_Settings/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_Settings/_Options..."), NULL, G_CALLBACK(SetOptions), 0, NULL, NULL },
-    { N_("/_Settings/_Language..."), NULL, G_CALLBACK(SetLanguage), 0, NULL, NULL },
-    { N_("/G_o"), NULL, NULL, 0, "<Branch>", NULL },
-    { N_("/G_o/Previous marked move"), "<shift><control>Page_Up", G_CALLBACK(Command), CMD_PREV_MARKED, "<StockItem>",
-     GNUBG_STOCK_GO_PREV_MARKED },
-    { N_("/G_o/Previous cmarked move"), "<shift>Page_Up", G_CALLBACK(Command), CMD_PREV_CMARKED, "<StockItem>",
-     GNUBG_STOCK_GO_PREV_CMARKED },
-    { N_("/G_o/Previous rol_l"), "Page_Up", G_CALLBACK(Command), CMD_PREV_ROLL, "<StockItem>", GNUBG_STOCK_GO_PREV },
-    { N_("/G_o/Pre_vious game"), "<control>Page_Up", G_CALLBACK(Command), CMD_PREV_GAME, "<StockItem>",
-     GNUBG_STOCK_GO_PREV_GAME },
-    { N_("/G_o/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/G_o/Next _game"), "<control>Page_Down", G_CALLBACK(Command), CMD_NEXT_GAME, "<StockItem>",
-     GNUBG_STOCK_GO_NEXT_GAME },
-    { N_("/G_o/Next _roll"), "Page_Down", G_CALLBACK(Command), CMD_NEXT_ROLL, "<StockItem>", GNUBG_STOCK_GO_NEXT },
-    { N_("/G_o/Next cmarked move"), "<shift>Page_Down", G_CALLBACK(Command), CMD_NEXT_CMARKED, "<StockItem>",
-     GNUBG_STOCK_GO_NEXT_CMARKED },
-    { N_("/G_o/Next marked move"), "<shift><control>Page_Down", G_CALLBACK(Command), CMD_NEXT_MARKED, "<StockItem>",
-     GNUBG_STOCK_GO_NEXT_MARKED },
-    { N_("/_Help"), NULL, NULL, 0, "<Branch>", NULL },
-    { N_("/_Help/_Commands"), NULL, G_CALLBACK(Command), CMD_HELP, NULL, NULL },
-    { N_("/_Help/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_Help/_Manual (all about)"), NULL, G_CALLBACK(Command),
-     CMD_SHOW_MANUAL_ABOUT, NULL, NULL },
-    { N_("/_Help/Manual (_web)"), NULL, G_CALLBACK(Command),
-     CMD_SHOW_MANUAL_WEB, NULL, NULL },
-    { N_("/_Help/-"), NULL, NULL, 0, "<Separator>", NULL },
-    { N_("/_Help/_About GNU Backgammon"), NULL, G_CALLBACK(Command), CMD_SHOW_VERSION,
-     "<StockItem>", GTK_STOCK_ABOUT }
-};
-#endif
-
 static void
 Stop(GtkWidget *pw, gpointer UNUSED(unused))
 {
@@ -4477,10 +3998,8 @@ CreateMainWindow(void)
 {
     GtkWidget *pwVbox, *pwHbox, *pwHbox2, *pwHandle, *pwPanelHbox, *pwStopButton, *idMenu, *menu_item, *pwFrame;
     GtkTargetEntry fileDrop = { "text/uri-list", GTK_TARGET_OTHER_APP, 1 };
-#if !defined(USE_GTKITEMFACTORY)
     GError *error = NULL;
     GtkActionGroup *action_group;
-#endif
 
     pwMain = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_maximize(GTK_WINDOW(pwMain));
@@ -4500,7 +4019,6 @@ CreateMainWindow(void)
 
     gtk_container_add(GTK_CONTAINER(pwMain), pwVbox);
 
-#if !defined(USE_GTKITEMFACTORY)
     puim = gtk_ui_manager_new();
 
     action_group = gtk_action_group_new("Actions");
@@ -4530,33 +4048,14 @@ CreateMainWindow(void)
     /* Bind the accelerators */
     gtk_window_add_accel_group(GTK_WINDOW(pwMain), pagMain = gtk_ui_manager_get_accel_group(puim));
 
-
-#else
-    pagMain = gtk_accel_group_new();
-    pif = gtk_item_factory_new(GTK_TYPE_MENU_BAR, "<main>", pagMain);
-
-    gtk_item_factory_set_translate_func(pif, GTKTranslate, NULL, NULL);
-
-    gtk_item_factory_create_items(pif, sizeof(aife) / sizeof(aife[0]), aife, NULL);
-
-    /* Tick default toolbar style */
-    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-                                   (gtk_item_factory_get_widget_by_action(pif, nToolbarStyle + TOOLBAR_ACTION_OFFSET)),
-                                   TRUE);
-    gtk_window_add_accel_group(GTK_WINDOW(pwMain), pagMain);
-#endif
 #if GTK_CHECK_VERSION(3,0,0)
     pwHandle = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 #else
     pwHandle = gtk_vbox_new(FALSE, 0);
 #endif
     gtk_box_pack_start(GTK_BOX(pwVbox), pwHandle, FALSE, FALSE, 0);
-#if !defined(USE_GTKITEMFACTORY)
     pwMenuBar = gtk_ui_manager_get_widget(puim, "/MainMenu");
     gtk_container_add(GTK_CONTAINER(pwHandle), pwMenuBar);
-#else
-    gtk_container_add(GTK_CONTAINER(pwHandle), pwMenuBar = gtk_item_factory_get_widget(pif, "<main>"));
-#endif
 
 #if GTK_CHECK_VERSION(3,0,0)
     pwHandle = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -4607,9 +4106,7 @@ CreateMainWindow(void)
     gtk_box_pack_start(GTK_BOX(pwPanelHbox), pwPanelVbox, TRUE, TRUE, 0);
 
     /* Do this so that the menu is packed now instead of in the idle loop */
-#if !defined(USE_GTKITEMFACTORY)
     gtk_ui_manager_ensure_update(puim);
-#endif
 
     DockPanels();
 
@@ -4882,29 +4379,15 @@ RunGTK(GtkWidget * pwSplash, char *commands, char *python_script, char *match)
         /* Make sure some things stay hidden */
         if (!ArePanelsDocked()) {
             gtk_widget_hide(hpaned);
-#if !defined(USE_GTKITEMFACTORY)
             gtk_widget_hide((gtk_ui_manager_get_widget(puim, "/MainMenu/ViewMenu/PanelsMenu/Commentary")));
             gtk_widget_hide((gtk_ui_manager_get_widget(puim, "/MainMenu/ViewMenu/HidePanels")));
             gtk_widget_hide((gtk_ui_manager_get_widget(puim, "/MainMenu/ViewMenu/RestorePanels")));
-#else
-            gtk_widget_hide(gtk_item_factory_get_widget(pif, "/View/Panels/Commentary"));
-            gtk_widget_hide(gtk_item_factory_get_widget(pif, "/View/Hide panels"));
-            gtk_widget_hide(gtk_item_factory_get_widget(pif, "/View/Restore panels"));
-#endif
         } else {
             if (ArePanelsShowing()) {
-#if !defined(USE_GTKITEMFACTORY)
                 gtk_widget_hide((gtk_ui_manager_get_widget(puim, "/MainMenu/ViewMenu/RestorePanels")));
-#else
-                gtk_widget_hide(gtk_item_factory_get_widget(pif, "/View/Restore panels"));
-#endif
                 gtk_widget_hide(pwGameBox);
             } else
-#if !defined(USE_GTKITEMFACTORY)
                 gtk_widget_hide((gtk_ui_manager_get_widget(puim, "/MainMenu/ViewMenu/HidePanels")));
-#else
-                gtk_widget_hide(gtk_item_factory_get_widget(pif, "/View/Hide panels"));
-#endif
         }
 
         /* Make sure main window is on top */
@@ -4915,11 +4398,7 @@ RunGTK(GtkWidget * pwSplash, char *commands, char *python_script, char *match)
         ShowBoard();
 
         if (fToolbarShowing)
-#if !defined(USE_GTKITEMFACTORY)
             gtk_widget_hide((gtk_ui_manager_get_widget(puim, "/MainMenu/ViewMenu/ToolBarMenu/ShowToolBar")));
-#else
-            gtk_widget_hide(gtk_item_factory_get_widget(pif, "/View/Toolbar/Show Toolbar"));
-#endif
 
         if (fFullScreen) {      /* Change to full screen (but hide warning) */
             fullScreenOnStartup = TRUE;
@@ -7482,7 +6961,7 @@ GTKBearoffProgress(int i)
 
 #if GTK_CHECK_VERSION(3,0,0)
         gtk_box_pack_start(GTK_BOX(DialogArea(pwDialog, DA_MAIN)),
-		           pw = gtk_progress_bar_new(), TRUE, TRUE, 8);
+                           pw = gtk_progress_bar_new(), TRUE, TRUE, 8);
         gtk_widget_set_halign(pw, GTK_ALIGN_FILL);
         gtk_widget_set_valign(pw, GTK_ALIGN_CENTER);
 #else
@@ -7548,7 +7027,6 @@ GTKSet(void *p)
 
     if (p == ap) {
         /* Handle the player names. */
-#if !defined(USE_GTKITEMFACTORY)
         gtk_label_set_text(GTK_LABEL
                            (gtk_bin_get_child
                             (GTK_BIN(gtk_ui_manager_get_widget(puim, "/MainMenu/GameMenu/SetTurnMenu/SetTurnPlayer0")
@@ -7557,14 +7035,6 @@ GTKSet(void *p)
                            (gtk_bin_get_child
                             (GTK_BIN(gtk_ui_manager_get_widget(puim, "/MainMenu/GameMenu/SetTurnMenu/SetTurnPlayer1")
                              ))), (ap[1].szName));
-#else
-        gtk_label_set_text(GTK_LABEL
-                           (gtk_bin_get_child(GTK_BIN(gtk_item_factory_get_widget_by_action(pif, CMD_SET_TURN_0)
-                                              ))), (ap[0].szName));
-        gtk_label_set_text(GTK_LABEL
-                           (gtk_bin_get_child(GTK_BIN(gtk_item_factory_get_widget_by_action(pif, CMD_SET_TURN_1)
-                                              ))), (ap[1].szName));
-#endif
         GL_SetNames();
 
         GTKRegenerateGames();
@@ -7577,7 +7047,6 @@ GTKSet(void *p)
     } else if (p == &ms.fTurn) {
         /* Handle the player on roll. */
         fAutoCommand = TRUE;
-#if !defined(USE_GTKITEMFACTORY)
         if (ms.fTurn >= 0) {
             if (ms.fTurn)
                 gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_ui_manager_get_widget(puim,
@@ -7590,17 +7059,6 @@ GTKSet(void *p)
             enable_menu(gtk_ui_manager_get_widget(puim, "/MainMenu/GameMenu/Roll"), ms.fMove == ms.fTurn
                         && ap[ms.fMove].pt == PLAYER_HUMAN);
         }
-#else
-
-        if (ms.fTurn >= 0) {
-            gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-                                           (gtk_item_factory_get_widget_by_action(pif, CMD_SET_TURN_0 + ms.fTurn)),
-                                           TRUE);
-
-            enable_menu(gtk_item_factory_get_widget(pif, "/Game/Roll"),
-                        ms.fMove == ms.fTurn && ap[ms.fMove].pt == PLAYER_HUMAN);
-        }
-#endif
         fAutoCommand = FALSE;
     } else if (p == &ms.gs) {
         /* Handle the game state. */
@@ -7609,7 +7067,6 @@ GTKSet(void *p)
         board_set_playing(BOARD(pwBoard), plGame != NULL);
         ToolbarSetPlaying(pwToolbar, plGame != NULL);
 
-#if !defined(USE_GTKITEMFACTORY)
         gtk_widget_set_sensitive(gtk_ui_manager_get_widget(puim, "/MainMenu/FileMenu/Save"), plGame != NULL);
         enable_menu(gtk_ui_manager_get_widget(puim, "/MainMenu/GameMenu"), ms.gs == GAME_PLAYING);
         if (ms.fTurn >= 0)
@@ -7699,14 +7156,13 @@ GTKSet(void *p)
                                                            "/MainMenu/AnalyseMenu/AddMatchOrSessionStatsToDB"),
                                  !ListEmpty(&lMatch));
         gtk_widget_set_sensitive(gtk_ui_manager_get_widget(puim, "/MainMenu/AnalyseMenu/ShowRecords"), TRUE);
-	gtk_widget_set_sensitive(gtk_ui_manager_get_widget(puim, "/MainMenu/AnalyseMenu/PlotHistory"), TRUE);
-         
-        /*disabling everything when we analyze a game in the background*/
-        
+        gtk_widget_set_sensitive(gtk_ui_manager_get_widget(puim, "/MainMenu/AnalyseMenu/PlotHistory"), TRUE);
+
+        /* disabling everything when we analyze a game in the background */
+
         if(fBackgroundAnalysis){
             gtk_widget_set_sensitive(gtk_ui_manager_get_widget(puim, "/MainMenu/FileMenu/"), !fAnalysisRunning);
             gtk_widget_set_sensitive(gtk_ui_manager_get_widget(puim, "/MainMenu/EditMenu/"), !fAnalysisRunning);
-            // gtk_widget_set_sensitive(gtk_ui_manager_get_widget(puim, "/MainMenu/ViewMenu/"), !fAnalysisRunning);
             gtk_widget_set_sensitive(gtk_ui_manager_get_widget(puim, "/MainMenu/GameMenu/"), !fAnalysisRunning);
             gtk_widget_set_sensitive(gtk_ui_manager_get_widget(puim, "/MainMenu/AnalyseMenu/"), !fAnalysisRunning);
             gtk_widget_set_sensitive(gtk_ui_manager_get_widget(puim, "/MainMenu/SettingsMenu/"), !fAnalysisRunning);
@@ -7714,71 +7170,6 @@ GTKSet(void *p)
             // gtk_widget_set_sensitive(gtk_ui_manager_get_widget(puim, "/MainMenu/HelpMenu/"), !fAnalysisRunning);
         }
 
-#else
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget(pif, "/File/Save..."), plGame != NULL);
-
-        enable_sub_menu(gtk_item_factory_get_widget(pif, "/Game"), ms.gs == GAME_PLAYING);
-
-        if (ms.fTurn >= 0)
-            enable_menu(gtk_item_factory_get_widget(pif, "/Game/Roll"),
-                        ms.fMove == ms.fTurn && ap[ms.fMove].pt == PLAYER_HUMAN);
-
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_NEXT_ROLL), plGame != NULL);
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_PREV_ROLL), plGame != NULL);
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_NEXT_MARKED), plGame != NULL);
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_PREV_MARKED), plGame != NULL);
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_NEXT_GAME), !ListEmpty(&lMatch));
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_PREV_GAME), !ListEmpty(&lMatch));
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget(pif, "/File/Match information..."), !ListEmpty(&lMatch));
-
-        if (!fAnalysisRunning)
-            enable_sub_menu(gtk_item_factory_get_widget(pif, "/Analyse"), ms.gs == GAME_PLAYING);
-
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget(pif, "/Analyse/Analyse File"), TRUE);
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget(pif, "/Analyse/Batch analyse..."), TRUE);
-
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_ANALYSE_MOVE),
-                                 plLastMove && plLastMove->plNext && plLastMove->plNext->p);
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_ANALYSE_GAME), plGame != NULL);
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_ANALYSE_MATCH), !ListEmpty(&lMatch));
-
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_ANALYSE_CLEAR_MOVE),
-                                 plLastMove && plLastMove->plNext && plLastMove->plNext->p);
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_ANALYSE_CLEAR_GAME), plGame != NULL);
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_ANALYSE_CLEAR_MATCH),
-                                 !ListEmpty(&lMatch));
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_SHOW_STATISTICS_MATCH),
-                                 !ListEmpty(&lMatch));
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_SHOW_HISTORY),
-                                 !ListEmpty(&lMatch));
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_SHOW_MATCHEQUITYTABLE), TRUE);
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_SHOW_CALIBRATION), TRUE);
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_SWAP_PLAYERS), !ListEmpty(&lMatch));
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_CMARK_CUBE_CLEAR), !ListEmpty(&lMatch));
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_CMARK_CUBE_SHOW), !ListEmpty(&lMatch));
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_CMARK_MOVE_CLEAR), !ListEmpty(&lMatch));
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_CMARK_MOVE_SHOW), !ListEmpty(&lMatch));
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_CMARK_GAME_CLEAR), !ListEmpty(&lMatch));
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_CMARK_GAME_SHOW), !ListEmpty(&lMatch));
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_CMARK_MATCH_CLEAR),
-                                 !ListEmpty(&lMatch));
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_CMARK_MATCH_SHOW), !ListEmpty(&lMatch));
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_ANALYSE_ROLLOUT_CUBE),
-                                 !ListEmpty(&lMatch));
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_ANALYSE_ROLLOUT_MOVE),
-                                 !ListEmpty(&lMatch));
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_ANALYSE_ROLLOUT_GAME),
-                                 !ListEmpty(&lMatch));
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget_by_action(pif, CMD_ANALYSE_ROLLOUT_MATCH),
-                                 !ListEmpty(&lMatch));
-
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget(pif,
-                                                             "/Analyse/Add match or session to database"),
-                                 !ListEmpty(&lMatch));
-
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget(pif, "/Analyse/Show Records"), TRUE);
-        gtk_widget_set_sensitive(gtk_item_factory_get_widget(pif, "/Analyse/Plot History"), TRUE);
-#endif
         fAutoCommand = FALSE;
     } else if (p == &ms.fCrawford) {
         bd->crawford_game = ms.fCrawford;
@@ -7802,8 +7193,8 @@ GTKSet(void *p)
         if (gtk_widget_get_realized(pwBoard)) {
 #if defined(USE_BOARD3D)
             /* If in 3d mode may need to update sizes */
-			if (display_is_3d(bd->rd))
-				RecalcViewingVolume(bd);
+            if (display_is_3d(bd->rd))
+                RecalcViewingVolume(bd);
             else
 #endif
             {
@@ -7817,14 +7208,9 @@ GTKSet(void *p)
         }
     } else if (p == &fShowIDs) {
         inCallback = TRUE;
-#if !defined(USE_GTKITEMFACTORY)
         gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_ui_manager_get_widget(puim,
                                                                                      "/MainMenu/ViewMenu/ShowIDStatusBar")),
                                        fShowIDs);
-#else
-        gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM
-                                       (gtk_item_factory_get_widget(pif, "/View/Show ID in status bar")), fShowIDs);
-#endif
         inCallback = FALSE;
 
         if (!fShowIDs)
@@ -8371,8 +7757,7 @@ GTKDumpStatcontext(int game)
     g_signal_connect(pwStatDialog, "map", G_CALLBACK(stat_dialog_map), pwUsePanels);
 
     // gtk_widget_show_all (pwStatDialog);
-    GTKRunDialog(pwStatDialog); // <-- causes issues! 
-
+    GTKRunDialog(pwStatDialog); // <-- causes issues!
 
 #if defined(USE_BOARD3D)
     TidyGraphData(gd);
@@ -8831,16 +8216,16 @@ MoveListDestroy(void)
 extern gboolean
 display_is_3d(const renderdata* prd)
 {
-	g_assert(prd->fDisplayType == DT_2D || (prd->fDisplayType == DT_3D && widget3dValid));
-	return (prd->fDisplayType == DT_3D);
+    g_assert(prd->fDisplayType == DT_2D || (prd->fDisplayType == DT_3D && widget3dValid));
+    return (prd->fDisplayType == DT_3D);
 }
 
 extern gboolean
 display_is_2d(const renderdata* prd)
 {
-	displaytype fdt = prd->fDisplayType;
-	g_assert(fdt == DT_2D || fdt == DT_3D);
-	return (fdt == DT_2D ? TRUE : FALSE);
+    displaytype fdt = prd->fDisplayType;
+    g_assert(fdt == DT_2D || fdt == DT_3D);
+    return (fdt == DT_2D ? TRUE : FALSE);
 }
 #endif
 

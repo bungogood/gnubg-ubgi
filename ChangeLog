@@ -1,3 +1,9 @@
+2026-01-31  Philippe Michel  <philippe.michel7@free.fr>
+
+	* gtkgame.c, gtkgame.h, gtkpanels.c, gtktoolbar.c, gtktoolbar.h:
+	Remove the possibility to build the GTK2 version using
+	GtkItemFactory (see 2023-12-18 entry).
+
 2025-06-18  Philippe Michel  <philippe.michel7@free.fr>
 
 	* eval.c, eval.h, gnubg.c, gtkgame.c, movefilters.inc:

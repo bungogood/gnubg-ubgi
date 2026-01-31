@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2000-2003 Gary Wong <gtw@gnu.org>
- * Copyright (C) 2001-2016 the AUTHORS
+ * Copyright (C) 2001-2025 the AUTHORS
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,9 +27,7 @@
 
 #define TOOLBAR_ACTION_OFFSET 10000
 
-#if !defined(USE_GTKITEMFACTORY)
 extern GtkUIManager *puim;
-#endif
 
 extern GdkColor wlCol;
 extern GtkAccelGroup *pagMain;
@@ -162,9 +160,6 @@ extern void ShowList(char *asz[], const char *szTitle, GtkWidget * parent);
 extern void ShowMove(hintdata * phd, const int f);
 extern void SwapBoardToPanel(int ToPanel, int updateEvents);
 extern void DoHideAllPanels(int updateEvents);
-#if defined(USE_GTKITEMFACTORY)
-extern void ToggleDockPanels(gpointer p, guint n, GtkWidget * pw);
-#else
 
 #if GTK_CHECK_VERSION(3,0,0)
 extern void ToggleEdit(GtkToggleButton *widget, gpointer user_data);
@@ -174,7 +169,7 @@ extern void ToggleEdit(GtkToggleAction * action, gpointer user_data);
 
 extern void ToggleClockwise(GtkToggleAction * action, gpointer user_data);
 extern void ToggleDockPanels(GtkToggleAction * action, gpointer user_data);
-#endif
+
 extern void GTKUndo(void);
 extern void ShowToolbar(void);
 extern void HideToolbar(void);

@@ -7992,6 +7992,7 @@ CalibrationOK(GtkWidget * pw, GtkWidget * ppw)
 
     UserCommand("save settings");
     gtk_widget_destroy(gtk_widget_get_toplevel(pw));
+    gtk_main_quit();
 }
 
 static void
@@ -8023,7 +8024,7 @@ GTKShowCalibration(void)
     padj = GTK_ADJUSTMENT(gtk_adjustment_new(rEvalsPerSec > 0 ? rEvalsPerSec : 10000, 2, G_MAXFLOAT, 100, 1000, 0));
     pwspin = gtk_spin_button_new(padj, 100, 0);
     /* FIXME should be modal but presently causes crash and/or killing of the main window */
-    pwDialog = GTKCreateDialog(_("GNU Backgammon - Speed estimate"), DT_QUESTION,
+    pwDialog = GTKCreateDialog(_("GNU Backgammon - Speed estimate"), DT_INFO,
                                NULL, 0, G_CALLBACK(CalibrationOK), pwspin);
 #if GTK_CHECK_VERSION(3,0,0)
     pwvbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);

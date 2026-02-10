@@ -27,8 +27,6 @@
  * (3) Compile with MEC_STANDALONE to get Tornberg's original program, e.g.,
  *
  *     gcc -DMEC_STANDALONE mec.c -o mec
- *
- * $Id: mec.c,v 1.11 2019/04/27 17:24:56 plm Exp $
  */
 
 #include "config.h"
@@ -95,6 +93,9 @@ main(int argc, char **argv)
     double **E = (double **) malloc((ml + 1) * sizeof(double *));
 
     double *ec = (double *) calloc((ml + 1) * (ml + 1), sizeof(double));
+
+    if (E == NULL || ec == NULL)
+        exit(EXIT_FAILURE);
 
     {
         int i;

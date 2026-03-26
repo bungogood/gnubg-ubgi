@@ -3392,7 +3392,7 @@ static char *aaszLang[][3] = {
     {N_("System default"), "system", NULL},
     {N_("Czech"), "cs_CZ.UTF-8", "flags/czech.png"},
     {N_("Danish"), "da_DK.UTF-8", "flags/denmark.png"},
-    {N_("English (GB)"), "en_GB.UTF-8", "flags/england.png"},
+    {N_("English (GB)"), "en_GB.UTF-8", "flags/uk.png"},
     {N_("English (US)"), "en_US.UTF-8", "flags/usa.png"},
     {N_("Finnish"), "fi_FI.UTF-8", "flags/finland.png"},
     {N_("French"), "fr_FR.UTF-8", "flags/france.png"},

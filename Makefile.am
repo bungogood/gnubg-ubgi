@@ -18,7 +18,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = win32 lib doc met po m4 sounds board3d textures scripts flags fonts non-src pixmaps .
 
-bin_PROGRAMS = gnubg makebearoff makehyper bearoffdump makeweights
+bin_PROGRAMS = gnubg makebearoff makehyper bearoffdump makeweights bgperft
 
 #
 ##include path
@@ -223,6 +223,9 @@ bearoffdump_LDADD = -Llib lib/libevent.la @GLIB_LIBS@ @GTHREAD_LIBS@ @GOBJECT_LI
 
 makeweights_SOURCES = makeweights.c glib-ext.c
 makeweights_LDADD = -Llib lib/libevent.la @GLIB_LIBS@ @GTHREAD_LIBS@ @GOBJECT_LIBS@
+
+bgperft_SOURCES = bgperft.c $(UTILSOURCES)
+bgperft_LDADD = -Llib lib/libevent.la @GLIB_LIBS@ @GTHREAD_LIBS@ @GOBJECT_LIBS@
 
 
 #

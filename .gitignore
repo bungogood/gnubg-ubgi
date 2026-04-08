@@ -62,10 +62,13 @@ Makefile
 Makefile.in
 makehyper
 makeweights
+bgperft
 missing
 sgf_l.c
 sgf_y.c
 sgf_y.h
+sgf_sgf_y.c
+sgf_sgf_y.h
 stamp-*
 ylwrap
 Doxyfile

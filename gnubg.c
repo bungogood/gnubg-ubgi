@@ -87,6 +87,7 @@ static char szCommandSeparators[] = " \t\n\r\v\f";
 #include "external.h"
 #include "neuralnet.h"
 #include "util.h"
+#include "ubgi.h"
 
 #if defined(LIBCURL_PROTOCOL_HTTPS)
 #include <curl/curl.h>
@@ -4311,6 +4312,8 @@ run_cl(void)
     }
 }
 
+#include "ubgi.c"
+
 static void
 init_language(char **lang)
 {
@@ -4561,7 +4564,7 @@ main(int argc, char *argv[])
     char *met = NULL;
 
     static char *pchCommands = NULL, *lang = NULL;
-    static int fNoBearoff = FALSE, fSplash = FALSE, fNoTTY = FALSE, show_version = FALSE, debug = FALSE;
+    static int fNoBearoff = FALSE, fSplash = FALSE, fNoTTY = FALSE, show_version = FALSE, debug = FALSE, fUBGI = FALSE;
     GOptionEntry ao[] = {
         {"no-bearoff", 'b', 0, G_OPTION_ARG_NONE, &fNoBearoff,
          N_("Do not use bearoff database"), NULL},
@@ -4580,6 +4583,8 @@ main(int argc, char *argv[])
          N_("Show gtk splash screen"), NULL},
         {"tty", 't', 0, G_OPTION_ARG_NONE, &fNoX,
          N_("Start the command-line instead of using the graphical interface"), NULL},
+        {"ubgi", 0, 0, G_OPTION_ARG_NONE, &fUBGI,
+         N_("Start UBGI protocol loop on stdin/stdout"), NULL},
         {"version", 'v', 0, G_OPTION_ARG_NONE, &show_version,
          N_("Show version information and exit"), NULL},
         {"window-system-only", 'w', 0, G_OPTION_ARG_NONE, &fNoTTY,
@@ -4645,6 +4650,13 @@ main(int argc, char *argv[])
     if (argc > 1 && *argv[1])
         pchMatch = matchfile_from_argv(argv[1]);
 
+    if (fUBGI) {
+        fNoX = TRUE;
+        fNoTTY = TRUE;
+        fNoRC = TRUE;
+        fQuiet = TRUE;
+    }
+
     if (!debug)
         g_log_set_handler(NULL, G_LOG_LEVEL_DEBUG, &null_debug, NULL);
 
@@ -4665,9 +4677,13 @@ main(int argc, char *argv[])
     /* print version and exit if -v option given */
     /* FIXME? rc files not read yet, lang is still the default */
 
-    VersionMessage();
-    if (show_version)
+    if (show_version) {
+        VersionMessage();
         exit(EXIT_SUCCESS);
+    }
+
+    if (!fUBGI)
+        VersionMessage();
 
     if (CreateGnubgDirectory())
         exit(EXIT_FAILURE);
@@ -4758,6 +4774,15 @@ main(int argc, char *argv[])
         exit(EXIT_SUCCESS);
     }
 #endif
+
+    if (fUBGI) {
+        fInteractive = FALSE;
+        fShowProgress = FALSE;
+        outputoff();
+        run_ubgi_cl();
+        Shutdown();
+        exit(EXIT_SUCCESS);
+    }
 
     if (pchMatch)
         CommandImportAuto(pchMatch);

@@ -17,6 +17,35 @@ This repository is a focused GNU Backgammon fork with native `--ubgi` support.
 ./gnubg --ubgi --pkgdatadir . --datadir .
 ```
 
+## Runtime Data Lookup
+
+GNUbg needs runtime data files such as weights, bearoff databases, and MET XML files.
+
+Lookup order for program data (`pkgdatadir`) is:
+
+1. `--pkgdatadir <dir>` CLI option
+2. `GNUBG_PKGDATADIR` environment variable
+3. XDG user data dir: `$XDG_DATA_HOME/gnubg` (default `~/.local/share/gnubg`)
+4. XDG system data dirs: each entry in `$XDG_DATA_DIRS` with `/gnubg` appended
+5. Build-time default (`AC_PKGDATADIR`)
+
+Recommended modern location:
+
+- `~/.local/share/gnubg`
+
+Typical files under that directory:
+
+- `gnubg.weights`
+- `gnubg.wd`
+- `gnubg_ts0.bd`
+- `met/Kazaross-XG2.xml`
+
+If `gnubg.wd` is missing but `gnubg.weights` is present, generate it with:
+
+```bash
+./makeweights < gnubg.weights > gnubg.wd
+```
+
 ## Build (headless example)
 
 ```bash

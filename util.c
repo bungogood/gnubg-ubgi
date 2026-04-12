@@ -25,6 +25,49 @@
 #include <errno.h>
 #include "common.h"
 
+static int
+has_data_file(const char *dir, const char *file)
+{
+    char *path = g_build_filename(dir, file, NULL);
+    int exists = g_file_test(path, G_FILE_TEST_EXISTS);
+    g_free(path);
+    return exists;
+}
+
+static int
+is_usable_pkgdatadir(const char *dir)
+{
+    if (!dir || !*dir)
+        return FALSE;
+
+    if (has_data_file(dir, "gnubg.wd") || has_data_file(dir, "gnubg.weights"))
+        return TRUE;
+
+    return FALSE;
+}
+
+static char *
+find_xdg_pkgdatadir(void)
+{
+    char *candidate = g_build_filename(g_get_user_data_dir(), "gnubg", NULL);
+    if (is_usable_pkgdatadir(candidate))
+        return candidate;
+    g_free(candidate);
+
+    {
+        const gchar *const *dirs = g_get_system_data_dirs();
+        int i;
+        for (i = 0; dirs[i] != NULL; i++) {
+            candidate = g_build_filename(dirs[i], "gnubg", NULL);
+            if (is_usable_pkgdatadir(candidate))
+                return candidate;
+            g_free(candidate);
+        }
+    }
+
+    return NULL;
+}
+
 char *prefsdir = NULL;
 char *datadir = NULL;
 char *pkg_datadir = NULL;
@@ -105,7 +148,17 @@ getPkgDataDir(void)
 {
     if (!pkg_datadir)
 #if !defined(WIN32) || defined(USABLE_UNDER_MSYS)
-        pkg_datadir = g_strdup(AC_PKGDATADIR);
+    {
+        const char *env_pkgdatadir = g_getenv("GNUBG_PKGDATADIR");
+        if (env_pkgdatadir && *env_pkgdatadir)
+            pkg_datadir = g_strdup(env_pkgdatadir);
+
+        if (!pkg_datadir)
+            pkg_datadir = find_xdg_pkgdatadir();
+
+        if (!pkg_datadir)
+            pkg_datadir = g_strdup(AC_PKGDATADIR);
+    }
 #else
         pkg_datadir = g_build_filename(getDataDir(), NULL);
 #endif

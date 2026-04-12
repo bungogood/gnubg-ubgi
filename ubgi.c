@@ -205,6 +205,12 @@ ubgi_apply_setoption(const char *szName, const char *szValue)
         return FALSE;
     }
 
+    if (!g_ascii_strcasecmp(szName, "Variant")) {
+        if (!g_ascii_strcasecmp(szValue, "backgammon"))
+            return TRUE;
+        return FALSE;
+    }
+
     return FALSE;
 }
 
@@ -233,6 +239,55 @@ ubgi_go_role(const char *sz)
         return 2;
 
     return -1;
+}
+
+static void
+ubgi_normalize_move_text(char *szMove)
+{
+    char szOut[FORMATEDMOVESIZE];
+    char *pszSave = NULL;
+    char *pszTok;
+    int fFirst = TRUE;
+
+    szOut[0] = 0;
+
+    for (pszTok = strtok_r(szMove, " ", &pszSave); pszTok; pszTok = strtok_r(NULL, " ", &pszSave)) {
+        int nFrom, nTo;
+        char chExtra;
+        char szLeg[32];
+        const char *szFrom = NULL;
+        const char *szTo = NULL;
+
+        if (sscanf(pszTok, "%d/%d%c", &nFrom, &nTo, &chExtra) >= 2) {
+            if (nFrom == 25)
+                szFrom = "bar";
+            else if (nFrom == 0)
+                szFrom = "off";
+
+            if (nTo == 25)
+                szTo = "bar";
+            else if (nTo == 0)
+                szTo = "off";
+
+            if (szFrom || szTo) {
+                if (!szFrom)
+                    g_snprintf(szLeg, sizeof(szLeg), "%d/%s", nFrom, szTo);
+                else if (!szTo)
+                    g_snprintf(szLeg, sizeof(szLeg), "%s/%d", szFrom, nTo);
+                else
+                    g_snprintf(szLeg, sizeof(szLeg), "%s/%s", szFrom, szTo);
+                pszTok = szLeg;
+            }
+        }
+
+        if (!fFirst)
+            strncat(szOut, " ", sizeof(szOut) - strlen(szOut) - 1);
+        strncat(szOut, pszTok, sizeof(szOut) - strlen(szOut) - 1);
+        fFirst = FALSE;
+    }
+
+    strncpy(szMove, szOut, FORMATEDMOVESIZE - 1);
+    szMove[FORMATEDMOVESIZE - 1] = 0;
 }
 
 void
@@ -278,6 +333,7 @@ run_ubgi_cl(void)
             g_snprintf(szOpt, sizeof(szOpt), "option name EvalMode type combo default %s var cubeless var cubeful",
                        ap[0].esChequer.ec.fCubeful ? "cubeful" : "cubeless");
             ubgi_reply(szOpt);
+            ubgi_reply("option name Variant type combo default backgammon var backgammon");
             ubgi_reply("ubgiok");
             continue;
         }
@@ -485,11 +541,7 @@ run_ubgi_cl(void)
             }
 
             if (anMove[0] < 0) {
-                TanBoard anBoardAfterMove;
-                memcpy(anBoardAfterMove, us.anBoard, sizeof(anBoardAfterMove));
-                SwapSides(anBoardAfterMove);
-                g_print("bestmoveid %s\n", PositionID((ConstTanBoard) anBoardAfterMove));
-                fflush(stdout);
+                ubgi_reply("bestmove pass");
                 us.fHaveDice = FALSE;
                 continue;
             }
@@ -500,6 +552,7 @@ run_ubgi_cl(void)
                 while (cch && isspace((unsigned char) szMove[cch - 1]))
                     szMove[--cch] = 0;
             }
+            ubgi_normalize_move_text(szMove);
             if (ApplyMove(anBoardBeforeMove, anMove, TRUE) < 0) {
                 ubgi_error("internal", "apply_move_failed");
                 continue;
@@ -507,8 +560,11 @@ run_ubgi_cl(void)
 
             SwapSides(anBoardBeforeMove);
 
-            g_print("bestmoveid %s\n", PositionID((ConstTanBoard) anBoardBeforeMove));
-            fflush(stdout);
+            {
+                char szBest[FORMATEDMOVESIZE + 16];
+                g_snprintf(szBest, sizeof(szBest), "bestmove %s", szMove);
+                ubgi_reply(szBest);
+            }
             us.fHaveDice = FALSE;
             continue;
         }

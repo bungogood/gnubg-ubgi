@@ -2,50 +2,6 @@
 
 This repository is a focused GNU Backgammon fork with native `--ubgi` support.
 
-## Lineage
-
-- Upstream GNU Backgammon source and history: Savannah `gnubg` (based from `release-1_08_003`)
-- macOS compatibility fork work by Ken Riley (`kenr@nodots.com`)
-- UBGI protocol work in this fork
-
-## UBGI
-
-- Protocol reference: https://github.com/oysteijo/Universal-Backgammon-Interface
-- Run engine mode:
-
-```bash
-./gnubg --ubgi --pkgdatadir . --datadir .
-```
-
-## Runtime Data Lookup
-
-GNUbg needs runtime data files such as weights, bearoff databases, and MET XML files.
-
-Lookup order for program data (`pkgdatadir`) is:
-
-1. `--pkgdatadir <dir>` CLI option
-2. `GNUBG_PKGDATADIR` environment variable
-3. XDG user data dir: `$XDG_DATA_HOME/gnubg` (default `~/.local/share/gnubg`)
-4. XDG system data dirs: each entry in `$XDG_DATA_DIRS` with `/gnubg` appended
-5. Build-time default (`AC_PKGDATADIR`)
-
-Recommended modern location:
-
-- `~/.local/share/gnubg`
-
-Typical files under that directory:
-
-- `gnubg.weights`
-- `gnubg.wd`
-- `gnubg_ts0.bd`
-- `met/Kazaross-XG2.xml`
-
-If `gnubg.wd` is missing but `gnubg.weights` is present, generate it with:
-
-```bash
-./makeweights < gnubg.weights > gnubg.wd
-```
-
 ## Build (headless)
 
 ```bash
@@ -70,6 +26,38 @@ make -j4
 ```
 
 If `bison --version` still shows `2.3`, your shell is still using `/usr/bin/bison`.
+
+## Run UBGI mode
+
+- Protocol reference: https://github.com/oysteijo/Universal-Backgammon-Interface
+
+```bash
+./gnubg --ubgi --pkgdatadir . --datadir .
+```
+
+## Runtime Data Lookup
+
+This fork adds XDG-friendly data lookup for runtime files (weights, bearoff DBs, MET XML).
+
+Recommended location:
+
+- `~/.local/share/gnubg`
+
+Typical files:
+
+- `gnubg.weights`, `gnubg.wd`, `gnubg_ts0.bd`, `met/Kazaross-XG2.xml`
+
+If `gnubg.wd` is missing but `gnubg.weights` is present, generate it with:
+
+```bash
+./makeweights < gnubg.weights > gnubg.wd
+```
+
+## Lineage
+
+- Upstream GNU Backgammon source and history: Savannah `gnubg` (based from `release-1_08_003`)
+- macOS compatibility fork work by Ken Riley (`kenr@nodots.com`)
+- UBGI protocol work in this fork
 
 ## Notes
 

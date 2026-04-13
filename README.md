@@ -46,12 +46,30 @@ If `gnubg.wd` is missing but `gnubg.weights` is present, generate it with:
 ./makeweights < gnubg.weights > gnubg.wd
 ```
 
-## Build (headless example)
+## Build (headless)
 
 ```bash
+./autogen.sh
 ./configure --with-gtk=no --with-gtk3=no --with-board3d=no --with-python=no
 make -j4
 ```
+
+## macOS quick fix
+
+macOS ships old `/usr/bin/bison` (2.3), which fails on this repo.
+
+If `make` fails with `sgf_y.y` / `external_y.y` syntax errors, use this:
+
+```bash
+brew install bison flex
+export PATH="$(brew --prefix bison)/bin:$(brew --prefix flex)/bin:$PATH"
+bison --version
+./autogen.sh
+./configure --with-gtk=no --with-gtk3=no --with-board3d=no --with-python=no
+make -j4
+```
+
+If `bison --version` still shows `2.3`, your shell is still using `/usr/bin/bison`.
 
 ## Notes
 

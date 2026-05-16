@@ -181,7 +181,7 @@ ubgi_apply_setoption(const char *szName, const char *szValue)
         return TRUE;
     }
 
-    if (!g_ascii_strcasecmp(szName, "EvalPlies")) {
+    if (!g_ascii_strcasecmp(szName, "EvalPlies") || !g_ascii_strcasecmp(szName, "Ply")) {
         char *pszEnd;
         unsigned long n = strtoul(szValue, &pszEnd, 10);
         if (*szValue == 0 || *pszEnd || n > 7)
@@ -325,6 +325,9 @@ run_ubgi_cl(void)
                        ap[0].esChequer.ec.fDeterministic ? "true" : "false");
             ubgi_reply(szOpt);
             g_snprintf(szOpt, sizeof(szOpt), "option name EvalPlies type spin default %u min 0 max 7",
+                       ap[0].esChequer.ec.nPlies);
+            ubgi_reply(szOpt);
+            g_snprintf(szOpt, sizeof(szOpt), "option name Ply type spin default %u min 0 max 7",
                        ap[0].esChequer.ec.nPlies);
             ubgi_reply(szOpt);
             g_snprintf(szOpt, sizeof(szOpt), "option name EvalPrune type check default %s",

@@ -109,33 +109,7 @@ ubgi_copy_trimmed(char *szDst, size_t cchDst, const char *szSrc, size_t cchSrc)
 }
 
 static int
-ubgi_parse_setoption(const char *sz, char *szName, size_t cchName, char *szValue, size_t cchValue)
-{
-    const char *psz;
-    const char *pszValueTag;
-
-    if (!g_str_has_prefix(sz, "setoption "))
-        return FALSE;
-
-    psz = sz + strlen("setoption ");
-    if (!g_str_has_prefix(psz, "name "))
-        return FALSE;
-    psz += 5;
-
-    pszValueTag = strstr(psz, " value ");
-    if (!pszValueTag)
-        return FALSE;
-
-    if (!ubgi_copy_trimmed(szName, cchName, psz, (size_t) (pszValueTag - psz)))
-        return FALSE;
-    if (!ubgi_copy_trimmed(szValue, cchValue, pszValueTag + 7, strlen(pszValueTag + 7)))
-        return FALSE;
-
-    return TRUE;
-}
-
-static int
-ubgi_apply_setoption(const char *szName, const char *szValue)
+ubgi_apply_set(const char *szName, const char *szValue)
 {
     evalcontext *pecChequer = &ap[0].esChequer.ec;
     evalcontext *pecCube = &ap[0].esCube.ec;
@@ -317,27 +291,71 @@ run_ubgi_cl(void)
             ubgi_reply("id name GNU Backgammon");
             ubgi_reply("id author GNU Backgammon AUTHORS");
             ubgi_reply("id version " VERSION);
-            g_snprintf(szOpt, sizeof(szOpt), "option name Threads type spin default %u min 1 max %u",
-                       MT_GetNumThreads(), MAX_NUMTHREADS);
+            ubgi_reply("proto 0.2");
+            g_snprintf(szOpt, sizeof(szOpt), "key engine.threads int 1..%u %u",
+                       MAX_NUMTHREADS, MT_GetNumThreads());
             ubgi_reply(szOpt);
-            ubgi_reply("option name Seed type spin default 0 min 0 max 4294967295");
-            g_snprintf(szOpt, sizeof(szOpt), "option name Deterministic type check default %s",
+            ubgi_reply("key engine.seed int 0..4294967295 0");
+            g_snprintf(szOpt, sizeof(szOpt), "key engine.deterministic bool true|false %s",
                        ap[0].esChequer.ec.fDeterministic ? "true" : "false");
             ubgi_reply(szOpt);
-            g_snprintf(szOpt, sizeof(szOpt), "option name EvalPlies type spin default %u min 0 max 7",
+            g_snprintf(szOpt, sizeof(szOpt), "key engine.eval_plies int 0..7 %u",
                        ap[0].esChequer.ec.nPlies);
             ubgi_reply(szOpt);
-            g_snprintf(szOpt, sizeof(szOpt), "option name Ply type spin default %u min 0 max 7",
+            g_snprintf(szOpt, sizeof(szOpt), "key engine.ply int 0..7 %u",
                        ap[0].esChequer.ec.nPlies);
             ubgi_reply(szOpt);
-            g_snprintf(szOpt, sizeof(szOpt), "option name EvalPrune type check default %s",
+            g_snprintf(szOpt, sizeof(szOpt), "key engine.eval_prune bool true|false %s",
                        ap[0].esChequer.ec.fUsePrune ? "true" : "false");
             ubgi_reply(szOpt);
-            g_snprintf(szOpt, sizeof(szOpt), "option name EvalMode type combo default %s var cubeless var cubeful",
+            g_snprintf(szOpt, sizeof(szOpt), "key engine.eval_mode enum cubeless|cubeful %s",
                        ap[0].esChequer.ec.fCubeful ? "cubeful" : "cubeless");
             ubgi_reply(szOpt);
-            ubgi_reply("option name Variant type combo default backgammon var backgammon");
+            ubgi_reply("key game.variant enum backgammon backgammon");
             ubgi_reply("ubgiok");
+            continue;
+        }
+
+        if (!strcmp(sz, "keys")) {
+            ubgi_reply("key game.variant enum backgammon backgammon");
+            ubgi_reply("key engine.ply int 0..7 2");
+            continue;
+        }
+
+        if (g_str_has_prefix(sz, "get ")) {
+            const char *k = sz + 4;
+            if (!strcmp(k, "game.variant"))
+                ubgi_reply("value game.variant backgammon");
+            else if (!strcmp(k, "engine.ply")) {
+                char buf[64];
+                g_snprintf(buf, sizeof(buf), "value engine.ply %u", ap[0].esChequer.ec.nPlies);
+                ubgi_reply(buf);
+            } else
+                ubgi_error("unsupported", "key");
+            continue;
+        }
+
+        if (g_str_has_prefix(sz, "set ")) {
+            const char *rest = sz + 4;
+            const char *sp = strchr(rest, ' ');
+            char k[64], v[64], opt[64];
+            if (!sp || !ubgi_copy_trimmed(k, sizeof(k), rest, (size_t)(sp - rest)) ||
+                !ubgi_copy_trimmed(v, sizeof(v), sp + 1, strlen(sp + 1))) {
+                ubgi_error("bad_command", "set");
+                continue;
+            }
+            if (!strcmp(k, "game.variant"))
+                strcpy(opt, "Variant");
+            else if (!strcmp(k, "engine.ply"))
+                strcpy(opt, "Ply");
+            else {
+                ubgi_error("unsupported", "key");
+                continue;
+            }
+            if (!ubgi_apply_set(opt, v)) {
+                ubgi_error("bad_value", k);
+                continue;
+            }
             continue;
         }
 
@@ -348,18 +366,6 @@ run_ubgi_cl(void)
 
         if (!strcmp(sz, "newgame")) {
             ubgi_reset_state(&us);
-            continue;
-        }
-
-        if (g_str_has_prefix(sz, "setoption ")) {
-            char szName[64];
-            char szValue[256];
-            if (!ubgi_parse_setoption(sz, szName, sizeof(szName), szValue, sizeof(szValue))) {
-                ubgi_error("bad_argument", "setoption");
-                continue;
-            }
-            if (!ubgi_apply_setoption(szName, szValue))
-                ubgi_error("bad_argument", "setoption");
             continue;
         }
 
